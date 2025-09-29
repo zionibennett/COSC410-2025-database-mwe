@@ -1,0 +1,36 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Python (backend/)
+backend/.venv/
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/.coverage*
+backend/htmlcov/
+backend/build/
+backend/dist/
+backend/*.egg-info/
+
+# Alembic
+backend/alembic/__pycache__/
+
+# SQLite database & sidecars
+backend/*.db
+backend/*.db-*
+backend/*-shm
+backend/*-wal
+backend/*-journal
+
+# uv lockfile (if you generate one)
+backend/uv.lock
+
+# Logs
+*.log

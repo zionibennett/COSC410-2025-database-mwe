@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DB MWE — Authors & Books</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 750px; }
+      fieldset { margin-bottom: 1rem; }
+      ul { padding-left: 1rem; }
+      li { margin: .25rem 0; }
+      label { display: inline-block; width: 7rem; }
+      input, select { padding: .25rem .4rem; }
+      button { padding: .3rem .6rem; }
+      .row { display: flex; gap: .5rem; align-items: center; }
+    </style>
+  </head>
+  <body>
+    <h1>DB MWE — Authors & Books</h1>
+
+    <fieldset>
+      <legend>Add Author</legend>
+      <div class="row">
+        <label for="authorName">Name</label>
+        <input id="authorName" placeholder="e.g., Ursula K. Le Guin" />
+        <button id="addAuthorBtn">Add Author</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Add Book</legend>
+      <div class="row">
+        <label for="bookTitle">Title</label>
+        <input id="bookTitle" placeholder="e.g., A Wizard of Earthsea" />
+      </div>
+      <div class="row" style="margin-top:.5rem">
+        <label for="authorSelect">Author</label>
+        <select id="authorSelect"></select>
+        <button id="addBookBtn">Add Book</button>
+      </div>
+    </fieldset>
+
+    <h2>Authors</h2>
+    <ul id="authors"></ul>
+
+    <h2>Books</h2>
+    <ul id="books"></ul>
+
+    <script>
+      const qs = (s) => document.querySelector(s);
+      const authorsEl = qs('#authors');
+      const booksEl = qs('#books');
+      const authorName = qs('#authorName');
+      const bookTitle = qs('#bookTitle');
+      const authorSelect = qs('#authorSelect');
+
+      async function loadAuthors() {
+        const r = await fetch('/api/authors');
+        const data = await r.json();
+        authorsEl.innerHTML = data.map(a => `<li>${a.name} (id=${a.id})</li>`).join('');
+        authorSelect.innerHTML = data.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      }
+      async function loadBooks() {
+        const r = await fetch('/api/books');
+        const data = await r.json();
+        booksEl.innerHTML = data.map(b => `<li>${b.title} — <em>${b.author_name}</em></li>`).join('');
+      }
+
+      async function addAuthor() {
+        const name = authorName.value.trim();
+        if (!name) return alert('Enter a name');
+        const r = await fetch('/api/authors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        if (!r.ok) {
+          const t = await r.text();
+          alert('Error: ' + t);
+          return;
+        }
+        authorName.value='';
+        await loadAuthors();
+      }
+
+      async function addBook() {
+        const title = bookTitle.value.trim();
+        const author_id = parseInt(authorSelect.value, 10);
+        if (!title || !author_id) return alert('Enter a title and select an author');
+        const r = await fetch('/api/books', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, author_id })
+        });
+        if (!r.ok) {
+          const t = await r.text();
+          alert('Error: ' + t);
+          return;
+        }
+        bookTitle.value='';
+        await loadBooks();
+      }
+
+      qs('#addAuthorBtn').addEventListener('click', addAuthor);
+      qs('#addBookBtn').addEventListener('click', addBook);
+
+      loadAuthors().then(loadBooks);
+    </script>
+  </body>
+</html>
