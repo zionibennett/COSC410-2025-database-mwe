@@ -1,21 +1,21 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
-class AuthorCreate(BaseModel):
+class ProfessorCreate(BaseModel):
     name: str
 
-class AuthorOut(BaseModel):
+class ProfessorOut(BaseModel):
     id: int
     name: str
     model_config = ConfigDict(from_attributes=True)
 
-class BookCreate(BaseModel):
+class CourseCreate(BaseModel):
     title: str
-    author_id: int
+    professor_id: int
 
-class BookOut(BaseModel):
+class CourseOut(BaseModel):
     id: int
     title: str
-    author_id: int
-    author_name: Optional[str] = None
+    professor_id: int
+    professor_name: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)

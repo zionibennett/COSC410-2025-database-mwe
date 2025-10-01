@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>DB MWE — Authors & Books</title>
+    <title>DB MWE — Professors & Courses</title>
     <style>
       body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 750px; }
       fieldset { margin-bottom: 1rem; }
@@ -16,60 +16,60 @@
     </style>
   </head>
   <body>
-    <h1>DB MWE — Authors & Books</h1>
+    <h1>DB MWE — Professors & Courses</h1>
 
     <fieldset>
-      <legend>Add Author</legend>
+      <legend>Add Professor</legend>
       <div class="row">
-        <label for="authorName">Name</label>
-        <input id="authorName" placeholder="e.g., Ursula K. Le Guin" />
-        <button id="addAuthorBtn">Add Author</button>
+        <label for="professorName">Name</label>
+        <input id="professorName" placeholder="e.g., Ursula K. Le Guin" />
+        <button id="addProfessorBtn">Add Professor</button>
       </div>
     </fieldset>
 
     <fieldset>
-      <legend>Add Book</legend>
+      <legend>Add Course</legend>
       <div class="row">
-        <label for="bookTitle">Title</label>
-        <input id="bookTitle" placeholder="e.g., A Wizard of Earthsea" />
+        <label for="courseTitle">Title</label>
+        <input id="courseTitle" placeholder="e.g., A Wizard of Earthsea" />
       </div>
       <div class="row" style="margin-top:.5rem">
-        <label for="authorSelect">Author</label>
-        <select id="authorSelect"></select>
-        <button id="addBookBtn">Add Book</button>
+        <label for="professorSelect">Professor</label>
+        <select id="professorSelect"></select>
+        <button id="addCourseBtn">Add Course</button>
       </div>
     </fieldset>
 
-    <h2>Authors</h2>
-    <ul id="authors"></ul>
+    <h2>Professors</h2>
+    <ul id="professors"></ul>
 
-    <h2>Books</h2>
-    <ul id="books"></ul>
+    <h2>Courses</h2>
+    <ul id="courses"></ul>
 
     <script>
       const qs = (s) => document.querySelector(s);
-      const authorsEl = qs('#authors');
-      const booksEl = qs('#books');
-      const authorName = qs('#authorName');
-      const bookTitle = qs('#bookTitle');
-      const authorSelect = qs('#authorSelect');
+      const professorsEl = qs('#professors');
+      const coursesEl = qs('#courses');
+      const professorName = qs('#professorName');
+      const courseTitle = qs('#courseTitle');
+      const professorSelect = qs('#professorSelect');
 
-      async function loadAuthors() {
-        const r = await fetch('/api/authors');
+      async function loadProfessors() {
+        const r = await fetch('/api/professors');
         const data = await r.json();
-        authorsEl.innerHTML = data.map(a => `<li>${a.name} (id=${a.id})</li>`).join('');
-        authorSelect.innerHTML = data.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        professorsEl.innerHTML = data.map(a => `<li>${a.name} (id=${a.id})</li>`).join('');
+        professorSelect.innerHTML = data.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
       }
-      async function loadBooks() {
-        const r = await fetch('/api/books');
+      async function loadCourses() {
+        const r = await fetch('/api/courses');
         const data = await r.json();
-        booksEl.innerHTML = data.map(b => `<li>${b.title} — <em>${b.author_name}</em></li>`).join('');
+        coursesEl.innerHTML = data.map(b => `<li>${b.title} — <em>${b.professor_name}</em></li>`).join('');
       }
 
-      async function addAuthor() {
-        const name = authorName.value.trim();
+      async function addProfessor() {
+        const name = professorName.value.trim();
         if (!name) return alert('Enter a name');
-        const r = await fetch('/api/authors', {
+        const r = await fetch('/api/professors', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name })
@@ -79,32 +79,32 @@
           alert('Error: ' + t);
           return;
         }
-        authorName.value='';
-        await loadAuthors();
+        professorName.value='';
+        await loadProfessors();
       }
 
-      async function addBook() {
-        const title = bookTitle.value.trim();
-        const author_id = parseInt(authorSelect.value, 10);
-        if (!title || !author_id) return alert('Enter a title and select an author');
-        const r = await fetch('/api/books', {
+      async function addCourse() {
+        const title = courseTitle.value.trim();
+        const professor_id = parseInt(professorSelect.value, 10);
+        if (!title || !professor_id) return alert('Enter a title and select an professor');
+        const r = await fetch('/api/courses', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, author_id })
+          body: JSON.stringify({ title, professor_id })
         });
         if (!r.ok) {
           const t = await r.text();
           alert('Error: ' + t);
           return;
         }
-        bookTitle.value='';
-        await loadBooks();
+        courseTitle.value='';
+        await loadCourses();
       }
 
-      qs('#addAuthorBtn').addEventListener('click', addAuthor);
-      qs('#addBookBtn').addEventListener('click', addBook);
+      qs('#addProfessorBtn').addEventListener('click', addProfessor);
+      qs('#addCourseBtn').addEventListener('click', addCourse);
 
-      loadAuthors().then(loadBooks);
+      loadProfessors().then(loadCourses);
     </script>
   </body>
 </html>
